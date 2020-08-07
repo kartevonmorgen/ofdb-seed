@@ -1,0 +1,15 @@
+[package]
+name = "ofdb-seed"
+version = "0.0.0"
+authors = ["slowtec GmbH <post@slowtec.de>"]
+edition = "2018"
+
+[dependencies]
+ofdb-boundary = "*"
+seed = "0.7"
+
+[patch.crates-io.ofdb-boundary]
+git = "https://github.com/kartevonmorgen/openfairdb"
+
+[patch.crates-io.ofdb-entities]
+git = "https://github.com/kartevonmorgen/openfairdb"
