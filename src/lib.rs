@@ -1,5 +1,5 @@
 use ofdb_boundary::*;
-use seed::browser::fetch::{fetch, Method, Request, Result};
+use seed::browser::fetch::{fetch, Header, Method, Request, Result};
 
 /// OpenFairDB API
 #[derive(Debug, Clone)]
@@ -42,4 +42,44 @@ impl OfdbApi {
         response.check_status()?; // ensure we've got 2xx status
         Ok(())
     }
+
+    pub async fn get_places_clearance(&self, api_token: &str) -> Result<Vec<PendingClearanceForPlace>> {
+        // let url = format!("{}/places/clearance?limit=&offset=", API_ROOT);
+        let url = format!("{}/places/clearance", self.url);
+        let request = Request::new(url)
+            .method(Method::Get)
+            .header(Header::bearer(api_token));
+        let response = fetch(request).await?;
+        // .expect("HTTP request failed");
+        let result = response
+            .check_status()? 
+            .json()
+            .await?;
+        Ok(result)
+    }
+    pub async fn get_place_history(&self, api_token: &str, id: &str) -> Result<PlaceHistory> {
+        let url = format!("{}/places/{}/history", self.url, id);
+        let request = Request::new(url)
+            .method(Method::Get)
+            .header(Header::bearer(api_token));
+        let response = fetch(request).await?;
+        let result = response
+            .check_status()? // ensure we've got 2xx status
+            .json()
+            .await?;
+        Ok(result)
+    }
+    pub async fn post_places_clearance(&self, api_token: &str, clearances: Vec<ClearanceForPlace>) -> Result<ResultCount> {
+        let url = format!("{}/places/clearance", self.url);
+        let request = Request::new(url)
+            .method(Method::Post)
+            .header(Header::bearer(api_token))
+            .json(&clearances)?;
+        let response = fetch(request).await?;
+        let result = response
+            .check_status()? // ensure we've got 2xx status
+            .json()
+            .await?;
+        Ok(result)
+    }    
 }
