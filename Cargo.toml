@@ -1,9 +1,16 @@
 [package]
 name = "ofdb-seed"
-version = "0.0.0"
+description = "A seed library for building OpenFairDB based web applications"
+version = "0.9.0"
 authors = ["slowtec GmbH <post@slowtec.de>"]
+license = "MIT/Apache-2.0"
+homepage = "https://github.com/kartevonmorgen/ofdb-seed"
+repository = "https://github.com/kartevonmorgen/ofdb-seed"
 edition = "2018"
 
 [dependencies]
 ofdb-boundary = "0.9"
 seed = "0.7"
+
+[badges]
+maintenance = { status = "actively-developed" }
