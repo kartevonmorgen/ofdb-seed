@@ -5,11 +5,5 @@ authors = ["slowtec GmbH <post@slowtec.de>"]
 edition = "2018"
 
 [dependencies]
-ofdb-boundary = "*"
+ofdb-boundary = "0.9"
 seed = "0.7"
-
-[patch.crates-io.ofdb-boundary]
-git = "https://github.com/kartevonmorgen/openfairdb"
-
-[patch.crates-io.ofdb-entities]
-git = "https://github.com/kartevonmorgen/openfairdb"
