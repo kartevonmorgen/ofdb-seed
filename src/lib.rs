@@ -42,8 +42,7 @@ impl OfdbApi {
         response.check_status()?; // ensure we've got 2xx status
         Ok(())
     }
-
-    pub async fn get_places_clearance(
+    pub async fn get_places_clearance_with_api_token(
         &self,
         api_token: &str,
     ) -> Result<Vec<PendingClearanceForPlace>> {
@@ -55,7 +54,11 @@ impl OfdbApi {
         let result = response.check_status()?.json().await?;
         Ok(result)
     }
-    pub async fn get_place_history(&self, api_token: &str, id: &str) -> Result<PlaceHistory> {
+    pub async fn get_place_history_with_api_token(
+        &self,
+        api_token: &str,
+        id: &str,
+    ) -> Result<PlaceHistory> {
         let url = format!("{}/places/{}/history", self.url, id);
         let request = Request::new(url)
             .method(Method::Get)
@@ -67,7 +70,7 @@ impl OfdbApi {
             .await?;
         Ok(result)
     }
-    pub async fn post_places_clearance(
+    pub async fn post_places_clearance_with_api_token(
         &self,
         api_token: &str,
         clearances: Vec<ClearanceForPlace>,
