@@ -87,4 +87,25 @@ impl Api {
             .await?;
         Ok(result)
     }
+    pub async fn post_login(&self, email: String, password: String) -> Result<()> {
+        let req = Credentials { email, password };
+        let url = format!("{}/login", self.url);
+        let request = Request::new(url)
+            .credentials(web_sys::RequestCredentials::Include)
+            .method(Method::Post)
+            .json(&req)?;
+        let response = fetch(request).await?;
+        response.check_status()?; // ensure we've got 2xx status
+        Ok(())
+    }
+    pub async fn post_logout(&self) -> Result<()> {
+        let url = format!("{}/logout", self.url);
+        let request = Request::new(url)
+            .method(Method::Post)
+            .credentials(web_sys::RequestCredentials::Include)
+            .json(&())?;
+        let response = fetch(request).await?;
+        response.check_status()?; // ensure we've got 2xx status
+        Ok(())
+    }
 }

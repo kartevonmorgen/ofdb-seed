@@ -11,6 +11,7 @@ edition = "2018"
 [dependencies]
 ofdb-boundary = "0.9"
 seed = "0.7"
+web-sys = "0.3"
 
 [badges]
 maintenance = { status = "actively-developed" }
