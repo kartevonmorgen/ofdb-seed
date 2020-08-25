@@ -108,4 +108,16 @@ impl Api {
         response.check_status()?; // ensure we've got 2xx status
         Ok(())
     }
+    pub async fn get_users_current(&self) -> Result<User> {
+        let url = format!("{}/users/current", self.url);
+        let request = Request::new(url)
+            .method(Method::Get)
+            .credentials(web_sys::RequestCredentials::Include);
+        let response = fetch(request).await?;
+        let result = response
+            .check_status()? // ensure we've got 2xx status
+            .json()
+            .await?;
+        Ok(result)
+    }
 }
