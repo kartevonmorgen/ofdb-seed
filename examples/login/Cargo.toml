@@ -11,3 +11,4 @@ crate-type = ["cdylib"]
 [dependencies]
 seed = "*"
 ofdb-seed = { path = "../.." }
+ofdb-boundary = "0.9"

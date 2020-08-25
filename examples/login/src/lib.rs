@@ -4,6 +4,7 @@ use seed::{prelude::*, *};
 #[derive(Clone)]
 struct Mdl {
     api: Api,
+    user_email: Option<String>, 
     page: Page,
 }
 
@@ -16,7 +17,8 @@ enum Page {
 impl Default for Mdl {
     fn default() -> Self {
         Self {
-            api: Api::new("https://api.ofdb.io/v0".to_string()),
+            api: Api::new("/v0".to_string()),
+            user_email: None,
             page: Page::Login(Default::default()),
         }
     }
@@ -27,9 +29,12 @@ enum Msg {
     LoginResult(fetch::Result<()>),
     Logout,
     LogoutResult(fetch::Result<()>),
+    GetCurrentUser,
+    CurrentUserResult(fetch::Result<ofdb_boundary::User>),
 }
 
-fn init(_: Url, _: &mut impl Orders<Msg>) -> Mdl {
+fn init(_: Url, orders: &mut impl Orders<Msg>) -> Mdl {
+    orders.send_msg(Msg::GetCurrentUser);
     Mdl::default()
 }
 
@@ -59,8 +64,12 @@ fn update(msg: Msg, mdl: &mut Mdl, orders: &mut impl Orders<Msg>) {
             match res {
                 Ok(()) => {
                     mdl.page = Page::Home;
+                    orders.send_msg(Msg::GetCurrentUser);
                 }
                 Err(err) => {
+                    if let Page::Login(login_mdl) = &mut mdl.page {
+                        login_mdl.is_submitting = false;
+                    }
                     // TODO: show err
                     seed::error!(err);
                 }
@@ -81,14 +90,34 @@ fn update(msg: Msg, mdl: &mut Mdl, orders: &mut impl Orders<Msg>) {
                 }
             }
         }
+        Msg::GetCurrentUser => {
+            let api = mdl.api.clone();
+            orders.perform_cmd(async move { 
+                Msg::CurrentUserResult(api.get_users_current().await) 
+            });
+        }
+        Msg::CurrentUserResult(res) => {
+            match res {
+                Ok(user) => {
+                    mdl.user_email = Some(user.email);
+                    mdl.page = Page::Home;
+                }
+                Err(err) => {
+                    // TODO: show err
+                    seed::error!(err);
+                    mdl.page = Page::Login(Default::default());
+                }
+            }
+        }
     }
 }
 
 fn view(mdl: &Mdl) -> Node<Msg> {
+    let user = mdl.user_email.clone().unwrap_or(String::new());
     match &mdl.page {
         Page::Home => div![
             h1!["OpenFairDB"],
-            p!["You are logged in"],
+            p!["You are logged in ", user],
             button![ev(Ev::Click, |_| Msg::Logout), "logout"]
         ],
         Page::Login(mdl) => div![
