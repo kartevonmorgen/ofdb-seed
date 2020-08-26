@@ -4,7 +4,7 @@ use seed::{prelude::*, *};
 #[derive(Clone)]
 struct Mdl {
     api: Api,
-    user_email: Option<String>, 
+    user_email: Option<String>,
     page: Page,
 }
 
@@ -43,9 +43,15 @@ fn update(msg: Msg, mdl: &mut Mdl, orders: &mut impl Orders<Msg>) {
         Msg::Login(msg) => match &mut mdl.page {
             Page::Login(login_mdl) => match msg {
                 login::Msg::EmailChanged(email) => {
+                    if email.is_empty() {
+                        login_mdl.errors.email = Some("An email address is required".to_string());
+                    }
                     login_mdl.email = email;
                 }
                 login::Msg::PasswordChanged(pw) => {
+                    if pw.is_empty() {
+                        login_mdl.errors.password = Some("A password is required".to_string());
+                    }
                     login_mdl.password = pw;
                 }
                 login::Msg::Submit => {
@@ -60,21 +66,19 @@ fn update(msg: Msg, mdl: &mut Mdl, orders: &mut impl Orders<Msg>) {
             },
             _ => unreachable!(),
         },
-        Msg::LoginResult(res) => {
-            match res {
-                Ok(()) => {
-                    mdl.page = Page::Home;
-                    orders.send_msg(Msg::GetCurrentUser);
-                }
-                Err(err) => {
-                    if let Page::Login(login_mdl) = &mut mdl.page {
-                        login_mdl.is_submitting = false;
-                    }
-                    // TODO: show err
-                    seed::error!(err);
-                }
+        Msg::LoginResult(res) => match res {
+            Ok(()) => {
+                mdl.page = Page::Home;
+                orders.send_msg(Msg::GetCurrentUser);
             }
-        }
+            Err(err) => {
+                if let Page::Login(login_mdl) = &mut mdl.page {
+                    login_mdl.is_submitting = false;
+                    login_mdl.errors.form = Some("Login failed".to_string());
+                }
+                seed::error!(err);
+            }
+        },
         Msg::Logout => {
             let api = mdl.api.clone();
             orders.perform_cmd(async move { Msg::LogoutResult(api.post_logout().await) });
@@ -92,9 +96,8 @@ fn update(msg: Msg, mdl: &mut Mdl, orders: &mut impl Orders<Msg>) {
         }
         Msg::GetCurrentUser => {
             let api = mdl.api.clone();
-            orders.perform_cmd(async move { 
-                Msg::CurrentUserResult(api.get_users_current().await) 
-            });
+            orders
+                .perform_cmd(async move { Msg::CurrentUserResult(api.get_users_current().await) });
         }
         Msg::CurrentUserResult(res) => {
             match res {
@@ -116,11 +119,13 @@ fn view(mdl: &Mdl) -> Node<Msg> {
     let user = mdl.user_email.clone().unwrap_or(String::new());
     match &mdl.page {
         Page::Home => div![
+            class!["page", "home"],
             h1!["OpenFairDB"],
             p!["You are logged in ", user],
             button![ev(Ev::Click, |_| Msg::Logout), "logout"]
         ],
         Page::Login(mdl) => div![
+            class!["page", "login"],
             h1!["OpenFairDB Login"],
             login::view(&mdl).map_msg(Msg::Login)
         ],
