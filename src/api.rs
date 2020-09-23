@@ -120,4 +120,15 @@ impl Api {
             .await?;
         Ok(result)
     }
+    pub async fn get_tags(&self) -> Result<Vec<String>> {
+        let url = format!("{}/tags", self.url);
+        let request = Request::new(url)
+            .method(Method::Get);
+        let response = fetch(request).await?;
+        let result = response
+            .check_status()? // ensure we've got 2xx status
+            .json()
+            .await?;
+        Ok(result)
+    }
 }
