@@ -1,4 +1,5 @@
 use ofdb_boundary::*;
+use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use seed::browser::fetch::{fetch, Header, Method, Request, Result};
 
 /// OpenFairDB API
@@ -12,7 +13,8 @@ impl Api {
         Self { url }
     }
     pub async fn search(&self, txt: &str, bbox: &str) -> Result<SearchResponse> {
-        let url = format!("{}/search?text={}&bbox={}", self.url, txt, bbox);
+        let encoded_txt = utf8_percent_encode(txt, NON_ALPHANUMERIC);
+        let url = format!("{}/search?text={}&bbox={}", self.url, encoded_txt, bbox);
         let response = fetch(url).await?;
         response
             .check_status()? // ensure we've got 2xx status
@@ -122,8 +124,7 @@ impl Api {
     }
     pub async fn get_tags(&self) -> Result<Vec<String>> {
         let url = format!("{}/tags", self.url);
-        let request = Request::new(url)
-            .method(Method::Get);
+        let request = Request::new(url).method(Method::Get);
         let response = fetch(request).await?;
         let result = response
             .check_status()? // ensure we've got 2xx status
