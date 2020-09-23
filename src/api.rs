@@ -1,4 +1,5 @@
 use ofdb_boundary::*;
+use ofdb_entities::geo::MapBbox;
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use seed::browser::fetch::{fetch, Header, Method, Request, Result};
 
@@ -12,7 +13,7 @@ impl Api {
     pub fn new(url: String) -> Self {
         Self { url }
     }
-    pub async fn search(&self, txt: &str, bbox: &str) -> Result<SearchResponse> {
+    pub async fn search(&self, txt: &str, bbox: &MapBbox) -> Result<SearchResponse> {
         let encoded_txt = utf8_percent_encode(txt, NON_ALPHANUMERIC);
         let url = format!("{}/search?text={}&bbox={}", self.url, encoded_txt, bbox);
         let response = fetch(url).await?;
