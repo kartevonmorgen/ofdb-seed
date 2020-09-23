@@ -6,10 +6,9 @@
 //! use ofdb_seed::components::login;
 //! use seed::{*, prelude::*};
 //!
-//! let mdl = login::Mdl {
-//!    is_submitting: false,
-//!    attrs: class!["login-form"],
-//! };
+//! let mut mdl = login::Mdl::default();
+//! mdl.attrs = class!["login-form"];
+//!
 //! let login = login::view(&mdl);
 //!  ```
 
