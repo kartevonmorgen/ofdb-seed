@@ -90,8 +90,7 @@ impl Api {
             .await?;
         Ok(result)
     }
-    pub async fn post_login(&self, email: String, password: String) -> Result<()> {
-        let req = Credentials { email, password };
+    pub async fn post_login(&self, req: &Credentials) -> Result<()> {
         let url = format!("{}/login", self.url);
         let request = Request::new(url)
             .credentials(web_sys::RequestCredentials::Include)

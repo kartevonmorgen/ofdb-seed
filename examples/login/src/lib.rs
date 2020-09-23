@@ -1,4 +1,4 @@
-use ofdb_seed::{components::login, Api};
+use ofdb_seed::{boundary, components::login, Api};
 use seed::{prelude::*, *};
 
 #[derive(Clone)]
@@ -30,7 +30,7 @@ enum Msg {
     Logout,
     LogoutResult(fetch::Result<()>),
     GetCurrentUser,
-    CurrentUserResult(fetch::Result<ofdb_boundary::User>),
+    CurrentUserResult(fetch::Result<boundary::User>),
 }
 
 fn init(_: Url, orders: &mut impl Orders<Msg>) -> Mdl {
@@ -60,7 +60,10 @@ fn update(msg: Msg, mdl: &mut Mdl, orders: &mut impl Orders<Msg>) {
                     let password = login_mdl.password.clone();
                     let api = mdl.api.clone();
                     orders.perform_cmd(async move {
-                        Msg::LoginResult(api.post_login(email, password).await)
+                        Msg::LoginResult(
+                            api.post_login(&boundary::Credentials { email, password })
+                                .await,
+                        )
                     });
                 }
             },
