@@ -1,5 +1,5 @@
 [package]
-name = "login"
+name = "search"
 version = "0.0.0"
 authors = ["slowtec GmbH <post@slowtec.de>"]
 edition = "2018"
@@ -10,6 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 seed = "*"
+ofdb-boundary = { version = "0.9", features = [ "extra-derive" ] }
 ofdb-seed = { path = "../.." }
 
 [profile.release]
