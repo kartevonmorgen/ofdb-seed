@@ -1,6 +1,6 @@
 use ofdb_seed::{
     boundary::{MapBbox, MapPoint, SearchResponse},
-    components::search,
+    components::{search, search_result_item},
     Api,
 };
 use seed::{prelude::*, *};
@@ -96,13 +96,24 @@ fn update(msg: Msg, mdl: &mut Mdl, orders: &mut impl Orders<Msg>) {
 }
 
 fn view(mdl: &Mdl) -> Node<Msg> {
+    let res_item_cfg = search_result_item::Mdl::default();
+
     div![
         h1!["OpenFairDB search"],
         search::view(&mdl.search).map_msg(Msg::Search),
         if let Some(res) = &mdl.results {
-            let vis = res.visible.iter().map(|p| li![&p.title]);
-            let invis = res.invisible.iter().map(|p| li![&p.title]);
-            div![p!["Suchergebnisse:", ul![vis], ul![invis]]]
+            let vis = res
+                .visible
+                .iter()
+                .map(|p| li![search_result_item::view(&res_item_cfg, p)]);
+            let invis = res
+                .invisible
+                .iter()
+                .map(|p| search_result_item::view(&res_item_cfg, p));
+            div![
+                class!["search-results"],
+                p!["Suchergebnisse:", ul![vis], ul![invis]]
+            ]
         } else {
             empty!()
         }
