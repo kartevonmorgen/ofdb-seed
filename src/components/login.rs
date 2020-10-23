@@ -7,7 +7,7 @@
 //! use seed::{*, prelude::*};
 //!
 //! let mut mdl = login::Mdl::default();
-//! mdl.attrs = class!["login-form"];
+//! mdl.attrs = C!["login-form"];
 //!
 //! let login = login::view(&mdl);
 //!  ```
@@ -81,7 +81,7 @@ pub fn view(mdl: &Mdl) -> Node<Msg> {
         },
         &mdl.attrs,
         if let Some(msg) = &mdl.errors.form {
-            div![class!["error"], msg]
+            div![C!["error"], msg]
         } else {
             empty!()
         },
@@ -111,7 +111,7 @@ pub fn view(mdl: &Mdl) -> Node<Msg> {
                     }
                 ],
                 if let Some(msg) = &mdl.errors.email {
-                    div![class!["error"], msg]
+                    div![C!["error"], msg]
                 } else {
                     empty!()
                 }
@@ -136,14 +136,14 @@ pub fn view(mdl: &Mdl) -> Node<Msg> {
                     }
                 ],
                 if let Some(msg) = &mdl.errors.password {
-                    div![class!["error"], msg]
+                    div![C!["error"], msg]
                 } else {
                     empty!()
                 }
             ]
         ],
         input![
-            simple_ev(Ev::Click, Msg::Submit),
+            ev(Ev::Click, |_| Msg::Submit),
             attrs! {
                 At::Value => mdl.labels.login_button;
                 At::Type => "submit";
