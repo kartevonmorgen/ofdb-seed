@@ -9,9 +9,6 @@ based web applications.
 ```toml
 [dependencies]
 ofdb-seed = "*"
-
-[patch.crates-io.ofdb-seed]
-git = "https://github.com/kartevonmorgen/ofdb-seed"
 ```
 
 ## License
