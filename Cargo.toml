@@ -9,8 +9,7 @@ repository = "https://github.com/kartevonmorgen/ofdb-seed"
 edition = "2018"
 
 [dependencies]
-ofdb-boundary = "0.9.3"
-ofdb-entities = "0.9"
+ofdb-boundary = { version = "0.9.5", default-features = false }
 percent-encoding = "2"
 seed = "0.8"
 web-sys = "0.3"
