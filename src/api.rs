@@ -133,4 +133,35 @@ impl Api {
             .await?;
         Ok(result)
     }
+    pub async fn get_most_popular_tags(
+        &self,
+        min_count: Option<usize>,
+        max_count: Option<usize>,
+        limit: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<TagFrequency>> {
+        let mut url = format!("{}/entries/most-popular-tags", self.url);
+        if min_count.or(max_count).or(limit).or(offset).is_some() {
+            url = format!("{}?", url);
+            if let Some(cnt) = min_count {
+                url = format!("{}&min_count={}", url, cnt);
+            }
+            if let Some(cnt) = max_count {
+                url = format!("{}&max_count={}", url, cnt);
+            }
+            if let Some(l) = limit {
+                url = format!("{}&limit={}", url, l);
+            }
+            if let Some(o) = offset {
+                url = format!("{}&offset={}", url, o);
+            }
+        }
+        let request = Request::new(url).method(Method::Get);
+        let response = fetch(request).await?;
+        let result = response
+            .check_status()? // ensure we've got 2xx status
+            .json()
+            .await?;
+        Ok(result)
+    }
 }
